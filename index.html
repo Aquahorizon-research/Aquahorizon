@@ -222,6 +222,15 @@ function fillSelects(){
   $('f_topic').innerHTML=TOPICS.map(k=>`<option value="${k}">${esc(t('tp_'+k))}</option>`).join('');
   if(c)$('f_country').value=c; if(p)$('f_topic').value=p;
 }
+  function load(){
+  fetch(SUPABASE_URL+'/rest/v1/articles?select=*&order=created_at.desc',{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY}})
+  .then(r=>r.json())
+  .then(d=>{
+    if(!Array.isArray(d)){throw new Error(d&&d.message||'Unknown error');}
+    arts=d;const o=$('f').classList.contains('open');render();if(o&&canEdit)$('f').classList.add('open');
+  })
+  .catch(e=>{$('view').insertAdjacentHTML('afterbegin','<p style="color:#c0392b">Error: '+esc(e.message)+'</p>');});
+}
 function setLang(l){
   L=l; try{localStorage.setItem('lang',l)}catch(e){}
   try{dn=new Intl.DisplayNames([l],{type:'region'})}catch(e){dn=null}
